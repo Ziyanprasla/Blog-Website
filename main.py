@@ -15,6 +15,7 @@ from functools import wraps
 import smtplib
 import os
 
+
 EMAIL = os.getenv("Email")
 PASSWORD = os.getenv("Password")
 
@@ -71,19 +72,10 @@ class Comment(db.Model, UserMixin):
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
-def admin_only(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.id != 1:
-            return abort(403)
-        return f(*args, **kwargs)
-    return decorated_function
-
 
 @app.route('/')
 def get_all_posts():
     posts = BlogPost.query.all()
-    is_admin = request.args.get("is_admin")
     return render_template("index.html", all_posts=posts)
 
 
