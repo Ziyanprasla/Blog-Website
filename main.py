@@ -161,7 +161,7 @@ def contact():
         with smtplib.SMTP("smtp.gmail.com", 587) as connection:
             connection.starttls()
             connection.login(user=EMAIL, password=PASSWORD)
-            connection.sendmail(from_addr=EMAIL, to_addrs="ziyanprasla@gmail.com", msg=f"Subject:{name}\n\nfrom: {email}\nPhone Number: {number}\nMessage: {message}")
+            connection.sendmail(from_addr=EMAIL, to_addrs=os.getenv("MY_EMAIL"), msg=f"Subject:{name}\n\nfrom: {email}\nPhone Number: {number}\nMessage: {message}")
         flash("Your message has been sent!")
         return redirect(url_for("contact"))
     return render_template("contact.html")
