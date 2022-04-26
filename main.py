@@ -12,12 +12,8 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentsForm
 from flask_gravatar import Gravatar
 from functools import wraps
-import smtplib
 import os
 
-
-EMAIL = os.getenv("Email")
-PASSWORD = os.getenv("Password")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -31,7 +27,7 @@ login_manager.init_app(app)
 
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -144,27 +140,6 @@ def show_post(post_id):
             db.session.add(new_comment)
             db.session.commit()
     return render_template("post.html", post=requested_post, form=form)
-
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
-
-@app.route("/contact", methods=["GET", "POST"])
-def contact():
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        number = request.form.get("number")
-        message = request.form.get("message")
-        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-            connection.starttls()
-            connection.login(user=EMAIL, password=PASSWORD)
-            connection.sendmail(from_addr=EMAIL, to_addrs=os.getenv("MY_EMAIL"), msg=f"Subject:{name}\n\nfrom: {email}\nPhone Number: {number}\nMessage: {message}")
-        flash("Your message has been sent!")
-        return redirect(url_for("contact"))
-    return render_template("contact.html")
 
 
 @app.route("/new-post", methods=["GET", "POST"])
