@@ -27,13 +27,14 @@ login_manager.init_app(app)
 
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///blog.db"
+    # os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
 
-
+db.create_all()
 ##CONFIGURE TABLES
 class Users(db.Model, UserMixin):
     __tablename__ = "users"
